@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+    <h1>{{header}}</h1>
+    <form method="POST" action="{{action}}">
+      <div class="form-group">
+        <label for="{{fieldname}}">{{fieldtitle}}</label>
+        <input name="{{fieldname}}" type="text" class="form-control" id="{{fieldname}}" placeholder="Enter {{fieldtitle}}">
+      </div>
+      <button type="submit" class="btn btn-primary mt-1">{{buttonvalue}}</button>
+    </form>
+{% endblock %}

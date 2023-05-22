@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+  <head>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
+
+      <title>{% block title %}{% endblock %}</title>
+  </head>  
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <a class="navbar-brand" href="#">Raptor Twitter</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-link" href="/">Home</a>
+          
+          {% if username %}
+            <a class="nav-link" href="/tweet">New Tweet</a>
+            <a class="nav-link" href="/tweets">Tweets</a>
+            <a class="nav-link" href="/tweets/{{username}}">My tweets</a>
+            <a class="nav-link" href="/users">Users</a>
+            <a class="nav-link" href="/logout">Logout {{username|capitalize}}</a>
+          {% else %}
+            <a class="nav-link" href="/register">Register</a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+    
+    <div class="container mt-5">
+      {% with errors = get_flashed_messages(category_filter=["error"]) %}
+      {% if errors %}
+        {%- for msg in errors %}
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{msg}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor -%}
+      {% endif %}
+      {% endwith %}
+
+      {% with infos = get_flashed_messages(category_filter=["info"]) %}
+      {% if infos %}
+        {%- for msg in infos %}
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{msg}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor -%}
+      {% endif %}
+      {% endwith %}
+      
+      {% block content %}
+      {% endblock %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>
