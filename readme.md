@@ -9,5 +9,5 @@ poetry install
 
 # Run the app
 ```
-flask --app main run --port localhost:8000
+flask --app main run --port 8000
 ```
