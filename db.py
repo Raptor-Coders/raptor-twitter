@@ -35,6 +35,7 @@ def follow_user(follower, followee):
 
   conn.commit()
 
+
 def get_all_users_following(userid):
   cursor.execute('SELECT * from followers where followee = :a', {
     'a': userid
@@ -57,14 +58,15 @@ def get_all_users_unfollowing(userid, followers):
   # Above query returned a list of typle [(2,), (3,)] so access the index 0 to get the id
   followers = [row[0] for row in cursor.fetchall()]
 
-  # Get the list of all users and exclude the userid inself since it can not follow himself
-  cursor.execute('SELECT _id FROM users')
-  all_users = [row[0] for row in cursor.fetchall() if row[0] != userid]
+  # Get the list of all users and exclude himself since he can not follow himself
+  all_users = get_all_users()
+  all_other_users = [row[0] for row in all_users if row[0] != userid]
 
   # Find the users not in the followers list
-  users_not_following = [user for user in all_users if user not in followers]
+  users_not_following = [user for user in all_other_users if user not in followers]
 
   return users_not_following
+
 
 def create_tweet(username, tweet):
   cursor.execute('INSERT INTO tweets VALUES (null, :t, :u)', {
