@@ -35,6 +35,7 @@ def follow_user(follower, followee):
 
   conn.commit()
 
+
 def get_all_users_following(userid):
   cursor.execute('SELECT * from followers where followee = :a', {
     'a': userid
@@ -45,30 +46,26 @@ def get_all_users_following(userid):
   return followers
 
 
-def get_all_users_unfollowing(followers):
+def get_all_users_unfollowing(userid, followers):
   """
   Returns a list of users that the user in question is not following
   :param userid:
   :return: []
   """
+  # Get the list of users following the given user
+  cursor.execute('SELECT follower FROM followers WHERE followee = :userid', {'userid': userid})
 
-  followers_string = []
-  for item in followers:
-    followers_string.append(str(item))
+  # Above query returned a list of typle [(2,), (3,)] so access the index 0 to get the id
+  followers = [row[0] for row in cursor.fetchall()]
 
-  followers_comman_sep = ','.join(followers_string)
+  # Get the list of all users and exclude himself since he can not follow himself
+  all_users = get_all_users()
+  all_other_users = [row[0] for row in all_users if row[0] != userid]
 
-  print(followers)
-  print(followers_string)
-  print(followers_comman_sep)
+  # Find the users not in the followers list
+  users_not_following = [user for user in all_other_users if user not in followers]
 
-  cursor.execute('SELECT * from users where users._id not in (:followers)', {
-    'followers': followers_comman_sep,
-  })
-
-  followable = cursor.fetchall()
-
-  return followable
+  return users_not_following
 
 
 def create_tweet(username, tweet):
