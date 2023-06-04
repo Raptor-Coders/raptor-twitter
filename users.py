@@ -11,12 +11,12 @@ def get_all_users():
   return db.get_all_users()
 
 
-def get_all_users_following():
-  return db.get_all_users_following()
+def get_all_users_following(user_id):
+  return db.get_all_users_following(user_id)
 
 
-def get_all_users_unfollowing():
-  return db.get_all_users_unfollowing()
+def get_all_users_unfollowing(user_id):
+  return db.get_all_users_unfollowing(user_id)
 
 
 def create_user(username, password):

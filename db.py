@@ -46,7 +46,7 @@ def get_all_users_following(userid):
   return followers
 
 
-def get_all_users_unfollowing(userid, followers):
+def get_all_users_unfollowing(userid):
   """
   Returns a list of users that the user in question is not following
   :param userid:
@@ -56,14 +56,17 @@ def get_all_users_unfollowing(userid, followers):
   cursor.execute('SELECT follower FROM followers WHERE followee = :userid', {'userid': userid})
 
   # Above query returned a list of typle [(2,), (3,)] so access the index 0 to get the id
-  followers = [row[0] for row in cursor.fetchall()]
+  followers = [row for row in cursor.fetchall()]
 
   # Get the list of all users and exclude himself since he can not follow himself
   all_users = get_all_users()
-  all_other_users = [row[0] for row in all_users if row[0] != userid]
+  all_other_users = [row for row in all_users if row[0] != userid]
+
+  follower_ids = [follower[0] for follower in followers]
 
   # Find the users not in the followers list
-  users_not_following = [user for user in all_other_users if user not in followers]
+  users_not_following = [user for user in all_other_users if user[0] not in follower_ids]
+
 
   return users_not_following
 

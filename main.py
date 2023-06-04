@@ -132,9 +132,12 @@ def register_post():
 
 @app.route('/users', methods=['GET'])
 def users():
-  following_users = get_all_users_following()
-  unfollowing_users = get_all_users_unfollowing()
+  current_user = get_user_by_username(session['user'])
+  following_users = get_all_users_following(current_user[0])
+  unfollowing_users = get_all_users_unfollowing(current_user[0])
   all_users = get_all_users()
+
+  print('Not following: ', unfollowing_users)
 
   final_users = []
   for user in all_users:
@@ -146,7 +149,8 @@ def users():
   return render_template('users_page.html',
                          all_users=final_users,
                          following_users=following_users,
-                         unfollowing_users=unfollowing_users)
+                         unfollowing_users=unfollowing_users,
+                         )
 
 
 app.run(host='0.0.0.0', port=81)
