@@ -37,7 +37,7 @@ def follow_user(follower, followee):
 
 
 def get_all_users_following(userid):
-  cursor.execute('SELECT * from followers where followee = :a', {
+  cursor.execute('SELECT * FROM users where _id in (SELECT followee from followers where follower = :a)', {
     'a': userid
   })
 
@@ -56,17 +56,14 @@ def get_all_users_unfollowing(userid):
   cursor.execute('SELECT follower FROM followers WHERE followee = :userid', {'userid': userid})
 
   # Above query returned a list of typle [(2,), (3,)] so access the index 0 to get the id
-  followers = [row for row in cursor.fetchall()]
+  followers = [row[0] for row in cursor.fetchall()]
 
   # Get the list of all users and exclude himself since he can not follow himself
   all_users = get_all_users()
   all_other_users = [row for row in all_users if row[0] != userid]
 
-  follower_ids = [follower[0] for follower in followers]
-
   # Find the users not in the followers list
-  users_not_following = [user for user in all_other_users if user[0] not in follower_ids]
-
+  users_not_following = [user for user in all_other_users if user[0] not in followers]
 
   return users_not_following
 
