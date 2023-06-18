@@ -13,8 +13,7 @@ def init():
     '''CREATE TABLE if not exists users (_id integer primary key autoincrement, username text, password text, UNIQUE(username))'''
   )
 
-  cursor.execute(
-    '''
+  cursor.execute('''
       CREATE TABLE if not exists followers (
         follower INTEGER NOT NULL,
         followee INTEGER NOT NULL,
@@ -22,8 +21,7 @@ def init():
         FOREIGN KEY (followee) REFERENCES user(id),
         PRIMARY KEY (follower, followee)
       );
-    '''
-  )
+    ''')
   conn.commit()
 
 
@@ -37,9 +35,9 @@ def follow_user(follower, followee):
 
 
 def get_all_users_following(userid):
-  cursor.execute('SELECT * FROM users where _id in (SELECT followee from followers where follower = :a)', {
-    'a': userid
-  })
+  cursor.execute(
+    'SELECT * FROM users where _id in (SELECT followee from followers where follower = :a)',
+    {'a': userid})
 
   followers = cursor.fetchall()
 
@@ -47,13 +45,30 @@ def get_all_users_following(userid):
 
 
 def get_all_users_unfollowing(userid):
+  sql = '''
+    SELECT * 
+    FROM users 
+    where 
+      _id NOT IN (SELECT followee from followers where follower = :a)
+      AND _id <> :a
+  '''
+
+  cursor.execute(sql, {'a': userid})
+
+  followers = cursor.fetchall()
+
+  return followers
+
+
+def get_all_users_unfollowing_BACKUP(userid):
   """
   Returns a list of users that the user in question is not following
   :param userid:
   :return: []
   """
   # Get the list of users following the given user
-  cursor.execute('SELECT follower FROM followers WHERE followee = :userid', {'userid': userid})
+  cursor.execute('SELECT follower FROM followers WHERE followee = :userid',
+                 {'userid': userid})
 
   # Above query returned a list of typle [(2,), (3,)] so access the index 0 to get the id
   followers = [row[0] for row in cursor.fetchall()]
@@ -63,7 +78,9 @@ def get_all_users_unfollowing(userid):
   all_other_users = [row for row in all_users if row[0] != userid]
 
   # Find the users not in the followers list
-  users_not_following = [user for user in all_other_users if user[0] not in followers]
+  users_not_following = [
+    user for user in all_other_users if user[0] not in followers
+  ]
 
   return users_not_following
 

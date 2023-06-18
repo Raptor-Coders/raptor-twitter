@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, url_for, render_template, session, flash
 from tweets import add_tweet, get_all_tweets, get_tweets_by_username
-from users import create_user, password_match, get_user_by_username, get_all_users_following, get_all_users_unfollowing, get_all_users
+from users import create_user, password_match, get_user_by_username, get_all_users_following, get_all_users_unfollowing, get_all_users, follow_user
 import random
 
 app = Flask(__name__)
@@ -146,11 +146,22 @@ def users():
     final_users.append(user)
 
   print(final_users)
-  return render_template('users_page.html',
-                         all_users=final_users,
-                         following_users=following_users,
-                         unfollowing_users=unfollowing_users,
-                         )
+  return render_template(
+    'users_page.html',
+    all_users=final_users,
+    following_users=following_users,
+    unfollowing_users=unfollowing_users,
+  )
+
+
+@app.route('/follow/<followee>')
+def follow(followee):
+  if 'user' not in session:
+    return redirect(url_for('index'))
+
+  current_user = get_user_by_username(session['user'])
+  follow_user(current_user[0], followee)
+  return redirect(url_for('users'))
 
 
 app.run(host='0.0.0.0', port=81)

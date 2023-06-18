@@ -7,6 +7,14 @@ def password_match(username, password) -> bool:
   return check_password_hash(pw, password)
 
 
+def follow_user(follower, followee):
+  '''
+    Perform checks
+  '''
+  # if all good, call db function
+  db.follow_user(follower, followee)
+
+
 def get_all_users():
   return db.get_all_users()
 
