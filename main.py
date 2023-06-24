@@ -84,6 +84,15 @@ def contact():
                            fieldname='tweet',
                            buttonvalue='Tweet')
 
+  if len(tweet) > 250:
+    flash('Tweet can not be more than 250 characters long!', 'error')
+    return render_template('form.html',
+                           action='/save-tweet',
+                           header='What is happening?',
+                           fieldtitle='Tweet',
+                           fieldname='tweet',
+                           buttonvalue='Tweet')
+
   add_tweet(tweet, session['user'])
   flash('Successfully posted successfully!', 'info')
   return redirect(url_for('index'))
