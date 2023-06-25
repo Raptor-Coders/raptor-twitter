@@ -22,6 +22,26 @@ def init():
         PRIMARY KEY (follower, followee)
       );
     ''')
+
+  cursor.execute('''CREATE TABLE if not exists likes (
+      user_id integer, 
+      tweet_id integer, 
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(_id),
+      FOREIGN KEY (tweet_id) REFERENCES tweets(_id),
+      PRIMARY KEY (user_id, tweet_id)
+      )
+      ''')
+
+  conn.commit()
+
+
+def like_tweet(user_id, tweet_id):
+  cursor.execute('INSERT INTO likes VALUES (:user_id, :tweet_id, null)', {
+    'user_id': user_id,
+    'tweet_id': tweet_id
+  })
+
   conn.commit()
 
 
@@ -36,7 +56,8 @@ def follow_user(follower, followee):
 
 def unfollow_user(follower, followee):
   cursor.execute(
-    'DELETE FROM followers WHERE follower = :follower and followee = :followee', {
+    'DELETE FROM followers WHERE follower = :follower and followee = :followee',
+    {
       'follower': follower,
       'followee': followee
     })
@@ -139,3 +160,10 @@ def get_all_users():
   cursor.execute('SELECT * FROM users order by _id desc')
   users = cursor.fetchall()
   return users
+
+
+def get_likes_for_tweet(tweet_id):
+  cursor.execute('SELECT COUNT(user_id) FROM likes where tweet_id = :tweet',
+                 {'tweet': tweet_id})
+  likes = cursor.fetchone()
+  return likes
