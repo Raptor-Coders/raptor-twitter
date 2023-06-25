@@ -34,6 +34,16 @@ def follow_user(follower, followee):
   conn.commit()
 
 
+def unfollow_user(follower, followee):
+  cursor.execute(
+    'DELETE FROM followers WHERE follower = :follower and followee = :followee', {
+      'follower': follower,
+      'followee': followee
+    })
+
+  conn.commit()
+
+
 def get_all_users_following(userid):
   cursor.execute(
     'SELECT * FROM users where _id in (SELECT followee from followers where follower = :a)',

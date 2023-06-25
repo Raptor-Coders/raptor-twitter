@@ -10,9 +10,13 @@
             
             {% if username != user[1] %}
                 {% if title == 'Not Following' %}
-                  <a href="/follow/{{user[0]}}" class="badge badge-success">Follow</a>
+                  <form action="/follow/{{user[0]}}" method="post">
+                    <button type="submit" value={user[0]} class="btn badge-success">Follow</button>
+                  </form>
                 {% elif title == 'Following' %}
-                  <a href="#" class="badge badge-warning">Unfollow</a>
+                  <form action="/unfollow/{{user[0]}}" method="post">
+                    <button class="btn badge-danger" type="submit" value={user[0]}>Unfollow</button>
+                  </form>
                 {% endif %}
             {% endif %}
           </div>
