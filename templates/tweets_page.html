@@ -18,6 +18,11 @@
           <div class="media-body">
             <h6 class="mt-0 mb-1">{{tweet[2]}}</h6>
             <p class="mb-0">{{tweet[1]}}</p>
+            {% if tweet.liked or something %}
+            <button type="button" class="btn btn-success">Like</button>
+            {% else %}
+            <button type="button" class="btn btn-danger">Unlike</button>
+            {% endif %}
           </div>
         </li>
       {% endfor %}

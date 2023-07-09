@@ -1,6 +1,7 @@
 from flask import Flask, request, redirect, url_for, render_template, session, flash
 from tweets import add_tweet, get_all_tweets, get_tweets_by_username
 from users import create_user, password_match, get_user_by_username, get_all_users_following, get_all_users_unfollowing, get_all_users, follow_user, unfollow_user
+from likes import label_likes_for_user
 import random
 
 app = Flask(__name__)
@@ -108,6 +109,11 @@ def user_tweets(tweet_user=None):
     tweets = get_tweets_by_username(tweet_user)
   else:
     tweets = get_all_tweets()
+
+  authenticated_user = get_user_by_username(session['user'])
+  authenticated_user_id = authenticated_user[0]
+  tweets = label_likes_for_user(tweets, authenticated_user_id)
+  print('labeled_tweets', tweets)
 
   return render_template('tweets_page.html',
                          tweets=tweets,

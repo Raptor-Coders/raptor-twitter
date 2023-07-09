@@ -45,11 +45,27 @@ def init():
   conn.commit()
 
 
+def is_liked_by_user(user_id, tweet_id):
+  cursor.execute(
+    'SELECT * FROM likes where user_id = :user_id AND tweet_id = :tweet_id', {
+      'user_id': user_id,
+      'tweet_id': tweet_id
+    })
+
+  # return cursor.fetchone() is not None
+  
+  if cursor.fetchone():
+    return True
+  else:
+    return False
+
+
 def like_tweet(user_id, tweet_id):
-  cursor.execute('INSERT INTO likes (user_id, tweet_id) VALUES (:user_id, :tweet_id)', {
-    'user_id': user_id,
-    'tweet_id': tweet_id
-  })
+  cursor.execute(
+    'INSERT INTO likes (user_id, tweet_id) VALUES (:user_id, :tweet_id)', {
+      'user_id': user_id,
+      'tweet_id': tweet_id
+    })
 
   conn.commit()
 
@@ -81,6 +97,16 @@ def unfollow_user(follower, followee):
     {
       'follower': follower,
       'followee': followee
+    })
+
+  conn.commit()
+
+
+def unlike_tweet(user_id, tweet_id):
+  cursor.execute(
+    'DELETE FROM likes WHERE user_id = :user_id and tweet_id = :tweet_id', {
+      'user_id': user_id,
+      'tweet_id': tweet_id
     })
 
   conn.commit()
