@@ -5,44 +5,65 @@ cursor = conn.cursor()
 
 
 def init():
-  cursor.execute(
-    '''CREATE TABLE if not exists tweets (_id integer primary key autoincrement, tweet text, username text)'''
-  )
 
-  cursor.execute(
-    '''CREATE TABLE if not exists users (_id integer primary key autoincrement, username text, password text, UNIQUE(username))'''
-  )
+  cursor.execute('''DROP TABLE likes''')
 
-  cursor.execute('''
-      CREATE TABLE if not exists followers (
-        follower INTEGER NOT NULL,
-        followee INTEGER NOT NULL,
-        FOREIGN KEY (follower) REFERENCES user(id),
-        FOREIGN KEY (followee) REFERENCES user(id),
-        PRIMARY KEY (follower, followee)
-      );
+  cursor.execute('''CREATE TABLE if not exists tweets (
+         _id integer primary key autoincrement, 
+         tweet text, 
+         username text
+       )
+    ''')
+
+  cursor.execute('''CREATE TABLE if not exists users (
+          _id integer primary key autoincrement, 
+          username text, 
+          password text, 
+          UNIQUE(username)
+       )
+    ''')
+
+  cursor.execute('''CREATE TABLE if not exists followers (
+         follower INTEGER NOT NULL,
+         followee INTEGER NOT NULL,
+         FOREIGN KEY (follower) REFERENCES user(id),
+         FOREIGN KEY (followee) REFERENCES user(id),
+         PRIMARY KEY (follower, followee)
+      )
     ''')
 
   cursor.execute('''CREATE TABLE if not exists likes (
-      user_id integer, 
-      tweet_id integer, 
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(_id),
-      FOREIGN KEY (tweet_id) REFERENCES tweets(_id),
-      PRIMARY KEY (user_id, tweet_id)
+         user_id integer, 
+         tweet_id integer, 
+         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+         FOREIGN KEY (user_id) REFERENCES users(_id),
+         FOREIGN KEY (tweet_id) REFERENCES tweets(_id),
+         PRIMARY KEY (user_id, tweet_id)
       )
-      ''')
+    ''')
 
   conn.commit()
 
 
 def like_tweet(user_id, tweet_id):
-  cursor.execute('INSERT INTO likes VALUES (:user_id, :tweet_id, null)', {
+  cursor.execute('INSERT INTO likes (user_id, tweet_id) VALUES (:user_id, :tweet_id)', {
     'user_id': user_id,
     'tweet_id': tweet_id
   })
 
   conn.commit()
+
+
+def get_likes_count(tweet_id):
+  cursor.execute('SELECT COUNT(user_id) FROM likes where tweet_id = :tweet',
+                 {'tweet': tweet_id})
+  likes = cursor.fetchone()
+  return likes
+
+
+def get_all_likes(limit):
+  cursor.execute('SELECT * FROM likes')
+  return cursor.fetchmany(limit)
 
 
 def follow_user(follower, followee):
@@ -83,7 +104,6 @@ def get_all_users_unfollowing(userid):
       _id NOT IN (SELECT followee from followers where follower = :a)
       AND _id <> :a
   '''
-
   cursor.execute(sql, {'a': userid})
 
   followers = cursor.fetchall()
@@ -101,7 +121,7 @@ def get_all_users_unfollowing_BACKUP(userid):
   cursor.execute('SELECT follower FROM followers WHERE followee = :userid',
                  {'userid': userid})
 
-  # Above query returned a list of typle [(2,), (3,)] so access the index 0 to get the id
+  # Above query returned a list of tuples [(2,), (3,)] so access the index 0 to get the id
   followers = [row[0] for row in cursor.fetchall()]
 
   # Get the list of all users and exclude himself since he can not follow himself
@@ -160,10 +180,3 @@ def get_all_users():
   cursor.execute('SELECT * FROM users order by _id desc')
   users = cursor.fetchall()
   return users
-
-
-def get_likes_for_tweet(tweet_id):
-  cursor.execute('SELECT COUNT(user_id) FROM likes where tweet_id = :tweet',
-                 {'tweet': tweet_id})
-  likes = cursor.fetchone()
-  return likes

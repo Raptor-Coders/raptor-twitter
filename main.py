@@ -125,7 +125,7 @@ def register_post():
   password = request.form['password']
 
   if not username or not password:
-    flash('Username or password can not be blank!', 'error')
+    flash('Userfroname or password can not be blank!', 'error')
     return render_template('register.html')
 
   try:
