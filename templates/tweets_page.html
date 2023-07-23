@@ -18,10 +18,14 @@
           <div class="media-body">
             <h6 class="mt-0 mb-1">{{tweet[2]}}</h6>
             <p class="mb-0">{{tweet[1]}}</p>
-            {% if tweet.liked or something %}
-            <button type="button" class="btn btn-success">Like</button>
+            {% if tweet[3] %}
+              <form action="/unlike/{{tweet[0]}}" method="post">
+                <button type="submit" class="btn badge-warning">Unlike</button>
+              </form>
             {% else %}
-            <button type="button" class="btn btn-danger">Unlike</button>
+              <form action="/like/{{tweet[0]}}" method="post">
+                  <button type="submit" class="btn badge-success">Like</button>
+              </form>
             {% endif %}
           </div>
         </li>

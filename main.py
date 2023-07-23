@@ -1,8 +1,9 @@
 from flask import Flask, request, redirect, url_for, render_template, session, flash
-from tweets import add_tweet, get_all_tweets, get_tweets_by_username
+from tweets import add_tweet, get_all_tweets, get_tweets_by_username, get_famous_tweets
 from users import create_user, password_match, get_user_by_username, get_all_users_following, get_all_users_unfollowing, get_all_users, follow_user, unfollow_user
-from likes import label_likes_for_user
+from likes import label_likes_for_user, like_tweet, unlike_tweet
 import random
+from pprint import pprint
 
 app = Flask(__name__)
 app.secret_key = 'raptor-secret-key'
@@ -32,7 +33,12 @@ def index():
   if 'user' in session:
     # Get last 10 tweets
     tweets = get_all_tweets(10)
-    return render_template('home.html', tweets=tweets)
+    # Get 10 most famous tweets
+    famous_tweets = get_famous_tweets(10)
+
+    return render_template('home.html',
+                           tweets=tweets,
+                           famous_tweets=famous_tweets)
   else:
     return render_template('login.html')
 
@@ -113,7 +119,7 @@ def user_tweets(tweet_user=None):
   authenticated_user = get_user_by_username(session['user'])
   authenticated_user_id = authenticated_user[0]
   tweets = label_likes_for_user(tweets, authenticated_user_id)
-  print('labeled_tweets', tweets)
+  pprint(tweets)
 
   return render_template('tweets_page.html',
                          tweets=tweets,
@@ -187,6 +193,30 @@ def unfollow(followee):
   current_user = get_user_by_username(session['user'])
   unfollow_user(current_user[0], followee)
   return redirect(url_for('users'))
+
+
+@app.route('/like/<tweetid>', methods=['POST'])
+def like(tweetid):
+  if 'user' not in session:
+    return redirect(url_for('index'))
+
+  authenticated_user = get_user_by_username(session['user'])
+  authenticated_user_id = authenticated_user[0]
+  # TODO check tweetid 1. if id is valid 2. if id exists in DB
+  # if valid, then create record that we liked it in likes
+  like_tweet(authenticated_user_id, tweetid)
+  return redirect(url_for('user_tweets'))
+
+
+@app.route('/unlike/<tweetid>', methods=['POST'])
+def unlike(tweetid):
+  if 'user' not in session:
+    return redirect(url_for('index'))
+  authenticated_user = get_user_by_username(session['user'])
+  authenticated_user_id = authenticated_user[0]
+  # check tweetid
+  unlike_tweet(authenticated_user_id, tweetid)
+  return redirect(url_for('user_tweets'))
 
 
 app.run(host='0.0.0.0', port=81)

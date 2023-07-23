@@ -7,4 +7,8 @@
   {% with tweets=tweets, title='Recent 10 tweets' %}
     {% include 'tweets.html' %}
   {% endwith %}
+  <br>
+  {% with famous_tweets=famous_tweets, title='Most famous 10 tweets' %}
+    {% include 'famous_tweets.html' %}
+  {% endwith %}
 {% endblock %}

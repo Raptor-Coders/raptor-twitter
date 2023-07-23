@@ -6,8 +6,6 @@ cursor = conn.cursor()
 
 def init():
 
-  cursor.execute('''DROP TABLE likes''')
-
   cursor.execute('''CREATE TABLE if not exists tweets (
          _id integer primary key autoincrement, 
          tweet text, 
@@ -206,3 +204,12 @@ def get_all_users():
   cursor.execute('SELECT * FROM users order by _id desc')
   users = cursor.fetchall()
   return users
+
+def get_famous_tweets(limit):
+  cursor.execute('''SELECT tweet_id, COUNT(user_id) as cnt
+                  FROM likes 
+                  GROUP BY tweet_id 
+                  ORDER BY cnt DESC''')
+  # add join to get tweet text and user name
+  famouslikes = cursor.fetchmany(limit)
+  return famouslikes
