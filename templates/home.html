@@ -4,11 +4,11 @@
 {% block content %}
   {% include 'tweet_form.html' %}
   <br>
-  {% with tweets=tweets, title='Recent 10 tweets' %}
+  {% with tweets=tweets, title='The 10 most recent tweets' %}
     {% include 'tweets.html' %}
   {% endwith %}
   <br>
-  {% with famous_tweets=famous_tweets, title='Most famous 10 tweets' %}
+  {% with famous_tweets=famous_tweets, title='Top 10 famous tweets' %}
     {% include 'famous_tweets.html' %}
   {% endwith %}
 {% endblock %}

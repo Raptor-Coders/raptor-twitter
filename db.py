@@ -205,11 +205,19 @@ def get_all_users():
   users = cursor.fetchall()
   return users
 
+
 def get_famous_tweets(limit):
-  cursor.execute('''SELECT tweet_id, COUNT(user_id) as cnt
-                  FROM likes 
-                  GROUP BY tweet_id 
-                  ORDER BY cnt DESC''')
-  # add join to get tweet text and user name
+  cursor.execute('''SELECT tweet_id, COUNT(user_id) AS cnt
+                    FROM likes 
+                    GROUP BY tweet_id
+                    ORDER BY cnt DESC''')
+  # add join to fetch username and tweet text
+  # refactor famous_tweets.html to account to additional field being returned
+  #cursor.execute('''SELECT twt.username, twt.tweet, COUNT(likes.user_id) AS cnt  
+  #                  FROM likes 
+  #                  INNER JOIN tweets twt
+  #                  ON twt._id = likes.tweet_id
+  #                  GROUP BY likes.tweet_id
+  #                  ORDER BY cnt DESC''')
   famouslikes = cursor.fetchmany(limit)
   return famouslikes
